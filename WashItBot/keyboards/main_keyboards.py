@@ -6,5 +6,5 @@ def get_main_keyboard():
         ['Статус', 'Помощь'],
         ['Занять', 'Попросить забрать вещи']
     ]
-    return ReplyKeyboardMarkup(reply_keyboard)
+    return ReplyKeyboardMarkup(reply_keyboard, one_time_keyboard=True)
 

@@ -14,6 +14,7 @@ from WashItBot.settings import (
     CHOOSING,
     PHOTO_NOTIFY_USER,
     PHOTO_TAKE_MACHINE,
+    TIME_TAKE_MACHINE,
 )
 from WashItBot.message_handlers.hadlers import (
     command_help_handler,
@@ -49,8 +50,17 @@ def main():
                     Filters.regex('^help me'), command_help_handler.main
                 ),
             ],
-            PHOTO_TAKE_MACHINE: [MessageHandler(Filters.photo, command_take_handler.photo)],
-            PHOTO_NOTIFY_USER: [MessageHandler(Filters.photo, command_notify_handler.photo)],
+            PHOTO_TAKE_MACHINE: [
+                MessageHandler(Filters.photo, command_take_handler.process_received_photo),
+                CommandHandler('skip', command_take_handler.skip_take_machine),
+            ],
+            TIME_TAKE_MACHINE: [
+                MessageHandler(Filters.regex(r'^\d\d'), command_take_handler.process_received_time),
+                CommandHandler('skip', command_take_handler.skip_take_machine),
+            ],
+            PHOTO_NOTIFY_USER: [
+                MessageHandler(Filters.photo, command_notify_handler.photo)
+            ],
         },
         fallbacks=[
             # Restart main menu

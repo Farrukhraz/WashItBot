@@ -2,6 +2,7 @@ import os
 
 import sentry_sdk
 
+from dotenv import load_dotenv
 from telegram import Bot
 
 
@@ -15,6 +16,8 @@ BASE_DIR = os.getcwd()
 
 media_root = os.path.join(BASE_DIR, 'WashItBot', 'media')
 
+
+load_dotenv()
 
 if os.environ.get('DEBUG'):
     TOKEN = os.environ.get('DEBUG_BOT_TOKEN')

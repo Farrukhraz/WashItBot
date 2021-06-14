@@ -38,16 +38,16 @@ def main():
             CHOOSING: [
                 CommandHandler('help', command_help_handler.main),
                 MessageHandler(
-                    Filters.regex('^take machine'), command_take_handler.main
+                    Filters.regex('^Занять машинку'), command_take_handler.main
                 ),
                 MessageHandler(
-                    Filters.regex('^notify me later'), command_notify_handler.main
+                    Filters.regex('^Попросить забрать вещи'), command_notify_handler.main
                 ),
                 MessageHandler(
-                    Filters.regex('^show status'), command_status_handler.main
+                    Filters.regex('^Статус'), command_status_handler.main
                 ),
                 MessageHandler(
-                    Filters.regex('^help me'), command_help_handler.main
+                    Filters.regex('^Помощь'), command_help_handler.main
                 ),
             ],
             PHOTO_TAKE_MACHINE: [
@@ -55,11 +55,11 @@ def main():
                 CommandHandler('skip', command_take_handler.skip_take_machine),
             ],
             TIME_TAKE_MACHINE: [
-                MessageHandler(Filters.regex(r'^\d\d'), command_take_handler.process_received_time),
+                MessageHandler(Filters.text & ~Filters.command, command_take_handler.process_received_time),
                 CommandHandler('skip', command_take_handler.skip_take_machine),
             ],
             PHOTO_NOTIFY_USER: [
-                MessageHandler(Filters.photo, command_notify_handler.photo)
+                MessageHandler(Filters.photo, command_notify_handler.process_received_photo)
             ],
         },
         fallbacks=[

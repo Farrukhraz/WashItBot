@@ -4,6 +4,9 @@ import threading
 from time import time, sleep
 from typing import Dict
 
+from telegram import Update
+from telegram.ext import CallbackContext
+
 
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
@@ -14,9 +17,11 @@ logger = logging.getLogger(__name__)
 
 class WashingProcess(threading.Thread):
 
-    def __init__(self, user_id: str, machine_id: str, _time: int, *args, **kwargs) -> None:
+    def __init__(self, user_update: Update, user_context: CallbackContext,
+                 machine_id: str, _time: int, *args, **kwargs) -> None:
         super().__init__(name=machine_id)
-        self.user_id = user_id
+        self.user_update = user_update
+        self.user_context = user_context
         self.machine_id = machine_id
         self.__stop = False
         self.end_time = round(time() + self.__validate_time(_time))
@@ -86,10 +91,10 @@ class MonitoringUtil:
             return machine.is_busy()
         return False
 
-    def take_machine(self, user_id: str, machine_id: str, _time: int) -> None:
+    def take_machine(self, user_update: Update, user_context: CallbackContext, machine_id: str, _time: int) -> None:
         """ Take machine """
         if not self.is_machine_busy(machine_id):
-            self.busy_machines[machine_id] = WashingProcess(user_id, machine_id, _time)
+            self.busy_machines[machine_id] = WashingProcess(user_update, user_context, machine_id, _time)
         else:
             logger.warning(f"id='{machine_id}' can't be taken 'cause it is busy")
 

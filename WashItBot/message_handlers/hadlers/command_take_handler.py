@@ -1,7 +1,8 @@
 from telegram import Update
 from telegram.ext import CallbackContext
 
-from WashItBot.settings import CHOOSING, PHOTO_TAKE_MACHINE, TIME_TAKE_MACHINE
+from WashItBot.main import WASHING_MACHINES_MONITORING_UTIL
+from WashItBot.settings import CHOOSING, PHOTO_TAKE_MACHINE, TIME_TAKE_MACHINE, LOGGER
 from WashItBot.keyboards.main_keyboards import get_main_keyboard
 from WashItBot.utils.qrcode_reader_util import get_machine_number
 
@@ -20,6 +21,7 @@ def main(update: Update, context: CallbackContext) -> int:
 
 def skip_take_machine(update: Update, context: CallbackContext) -> int:
     reply_text = "Передумал стираться? Хм, ну ладно, как нибудь в другой раз =)"
+    del context.user_data['machine_id']
     update.message.reply_text(
         reply_text,
         reply_markup=get_main_keyboard(),
@@ -37,13 +39,25 @@ def process_received_photo(update: Update, context: CallbackContext) -> int:
     except ValueError:
         machine_name, machine_number = None, None
     if None not in [machine_name, machine_number]:
-        reply_text = f"Ага, вижу. {machine_name} №{machine_number}. \n\n" \
-                     f"Чтобы занять её, нужно ещё указать время, " \
-                     "которое осталось до конца стирки"
-        update.message.reply_text(
-            reply_text,
-        )
-        return TIME_TAKE_MACHINE
+        machine_id = f"{machine_name}:{machine_number}"
+        context.user_data['machine_id'] = machine_id
+        if WASHING_MACHINES_MONITORING_UTIL.is_machine_busy(machine_id):
+            reply_text = 'Так, так. Похоже что машинка уже занята. \n' \
+                         'Давай попробуем другую машинку?\n\n' \
+                         'Для того чтобы занять другую, отправь мне QR код машинки\n\n' \
+                         "Если передумал занимать машинку отправь\n" \
+                         "/skip    /skip   /skip   /skip"
+            update.message.reply_text(
+                reply_text,
+            )
+            return PHOTO_TAKE_MACHINE
+        else:
+            reply_text = f"Ага, вижу. {machine_name} №{machine_number}. \n\n" \
+                     f"Чтобы занять её, нужно указать время стирки (в минутах)"
+            update.message.reply_text(
+                reply_text,
+            )
+            return TIME_TAKE_MACHINE
     else:
         reply_text = "Не могу найти нужный мне QR код на изображении. " \
                      "Пожалуйста, попробуй сфотаграфировать его ещё раз\n\n" \
@@ -57,22 +71,14 @@ def process_received_photo(update: Update, context: CallbackContext) -> int:
 
 def process_received_time(update: Update, context: CallbackContext) -> int:
     """ Process time that user send """
-    text = update.message.text
-    try:
-        processed_time = int(text)
-        if processed_time < 1 or processed_time > 60:
-            raise ValueError
-    except ValueError:
-        processed_time = None
+    processed_time = __process_time(update.message.text)
     if processed_time:
-        reply_text = f"Супер, время вижу.\nНу что? Машинка твоя на ближайшие {processed_time} минут.\n\n" \
-                     "Я отправлю тебе оповещение за 5 минут до конца стирки =)"
+        reply_text = __take_machine(update, context, processed_time)
         update.message.reply_text(
             reply_text,
             reply_markup=get_main_keyboard(),
         )
 
-        # ToDo create event for this machine
         # ToDo create reminder for this user
 
         return CHOOSING
@@ -87,3 +93,30 @@ def process_received_time(update: Update, context: CallbackContext) -> int:
             reply_text,
         )
         return TIME_TAKE_MACHINE
+
+
+def __process_time(text: str) -> int:
+    try:
+        _time = int(text)
+        if _time < 1 or _time > 60:
+            raise ValueError
+        processed_time = _time * 60
+    except ValueError:
+        processed_time = None
+    return processed_time
+
+
+def __take_machine(update: Update, context: CallbackContext, _time) -> str:
+    machine_id = context.user_data['machine_id']
+    if not machine_id:
+        LOGGER.error("Trying to process the time but id of the machine is not recognized")
+        reply_text = f"Что то пошло не так =( \n\n Пожалуйста, останови меня через кнопку stop и перезапусти"
+    else:
+        WASHING_MACHINES_MONITORING_UTIL.take_machine(user_update=update, user_context=context,
+                                                      machine_id=machine_id, _time=_time)
+        reply_text = f"Супер, время вижу.\nНу что? Машинка твоя на ближайшие {_time//60} минут.\n\n" \
+                     f"Я отправлю тебе оповещение за 5 минут до конца твоей стирки =)"
+
+    return reply_text
+
+

@@ -3,7 +3,7 @@
 
 class NotificationUtil:
 
-    def create_notification(self, *args, **kwargs) -> None:
+    def notify_user(self, *args, **kwargs) -> None:
         """ Notify user to take his clothes """
         pass
 

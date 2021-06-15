@@ -1,17 +1,20 @@
 from telegram import Update
 from telegram.ext import CallbackContext
 
+from WashItBot.main import WASHING_MACHINES_MONITORING_UTIL
 from WashItBot.settings import CHOOSING
 from WashItBot.keyboards.main_keyboards import get_main_keyboard
 
-# from WashItBot.utils.status_util import get_current_status
-#
 
 def main(update: Update, context: CallbackContext) -> int:
     """ Sends machines current status """
-
-    # update.message.reply_text(
-    #     get_current_status(),
-    #     reply_markup=get_main_keyboard(),
-    # )
+    update.message.reply_text(
+        get_current_status(),
+        reply_markup=get_main_keyboard(),
+    )
     return CHOOSING
+
+
+def get_current_status() -> str:
+    status: list = WASHING_MACHINES_MONITORING_UTIL.get_status()
+    return str(status)

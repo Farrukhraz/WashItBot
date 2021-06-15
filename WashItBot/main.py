@@ -16,6 +16,12 @@ from WashItBot.settings import (
     PHOTO_TAKE_MACHINE,
     TIME_TAKE_MACHINE,
 )
+from WashItBot.utils.monitoring_util import MonitoringUtil
+
+
+WASHING_MACHINES_MONITORING_UTIL = MonitoringUtil()
+
+
 from WashItBot.message_handlers.hadlers import (
     command_help_handler,
     command_notify_handler,
@@ -59,7 +65,8 @@ def main():
                 CommandHandler('skip', command_take_handler.skip_take_machine),
             ],
             PHOTO_NOTIFY_USER: [
-                MessageHandler(Filters.photo, command_notify_handler.process_received_photo)
+                MessageHandler(Filters.photo, command_notify_handler.process_received_photo),
+                CommandHandler('skip', command_notify_handler.skip_notify_user),
             ],
         },
         fallbacks=[

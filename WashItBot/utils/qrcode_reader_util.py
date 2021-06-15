@@ -1,11 +1,9 @@
 # This util is used to read QR code from the image
 
-import io
-
 import requests
 from PIL import Image
 from PIL.JpegImagePlugin import JpegImageFile
-from pyzbar.pyzbar import decode, PyZbarError
+from pyzbar.pyzbar import decode
 
 
 def get_qr_code_content(image: JpegImageFile) -> str:

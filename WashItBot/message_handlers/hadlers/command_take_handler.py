@@ -5,8 +5,6 @@ from WashItBot.settings import CHOOSING, PHOTO_TAKE_MACHINE, TIME_TAKE_MACHINE
 from WashItBot.keyboards.main_keyboards import get_main_keyboard
 from WashItBot.utils.qrcode_reader_util import get_machine_number
 
-from WashItBot.utils.reminder_util import ReminderUtil
-
 
 def main(update: Update, context: CallbackContext) -> int:
     reply_text = "Хорошо, давай займём машинку.\n" \

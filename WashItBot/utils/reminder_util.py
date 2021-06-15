@@ -1,12 +1,21 @@
-class Reminder:
-
-    def __init__(self):
-        pass
+from threading import Timer
 
 
-class ReminderUtil:
+def __remind_user(user_id: str) -> None:
+    pass
 
-    def create_reminder(self, *args, **kwargs) -> None:
-        """ Run thread which will notify user before finishes """
-        pass
+
+def remind_user(time: int, user_id: str, *args, **kwargs) -> Timer:
+    """
+
+    :param time: Time is secs
+    :param args:
+    :param kwargs:
+    """
+    return Timer(time, function=__remind_user, args=(user_id, ))
+
+
+def cancel_reminder(reminder: Timer) -> None:
+    """ Cancel reminder """
+    reminder.cancel()
 

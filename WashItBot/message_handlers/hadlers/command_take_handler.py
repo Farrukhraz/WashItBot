@@ -5,6 +5,7 @@ from WashItBot.main import WASHING_MACHINES_MONITORING_UTIL
 from WashItBot.settings import CHOOSING, PHOTO_TAKE_MACHINE, TIME_TAKE_MACHINE, LOGGER
 from WashItBot.keyboards.main_keyboards import get_main_keyboard
 from WashItBot.utils.qrcode_reader_util import get_machine_number
+from WashItBot.utils.reminder_util import create_reminder
 
 
 def main(update: Update, context: CallbackContext) -> int:
@@ -74,13 +75,11 @@ def process_received_time(update: Update, context: CallbackContext) -> int:
     processed_time = __process_time(update.message.text)
     if processed_time:
         reply_text = __take_machine(update, context, processed_time)
+        __create_reminder(processed_time, update)
         update.message.reply_text(
             reply_text,
             reply_markup=get_main_keyboard(),
         )
-
-        # ToDo create reminder for this user
-
         return CHOOSING
     else:
         reply_text = "Не могу разобрать твоё сообщение =(\n" \
@@ -118,5 +117,12 @@ def __take_machine(update: Update, context: CallbackContext, _time) -> str:
                      f"Я отправлю тебе оповещение за 5 минут до конца твоей стирки =)"
 
     return reply_text
+
+
+def __create_reminder(_time, update: Update) -> None:
+    if _time < 5 * 60:
+        return
+    remind_time = int(_time - 4.5 * 60)
+    create_reminder(remind_time, update)
 
 

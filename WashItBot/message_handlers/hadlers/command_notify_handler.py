@@ -21,22 +21,6 @@ def main(update: Update, context: CallbackContext) -> int:
     )
     return PHOTO_NOTIFY_USER
 
-    # find out which machine is scanned
-    # check that machine is busy or not
-    # if it isn't busy - try to notify last used user - else - say current user that machine is still working
-
-    # if check_user():
-    #     notify_user()
-    #     reply_text = "Пользователь оповещён. Скоро он заберёт свои вещи =)"
-    # else:
-    #     reply_text = "Не получается найти чьи это вещи. Видимо пользователь не воспользовался ботом =("
-
-    # update.message.reply_text(
-    #     reply_text,
-    #     reply_markup=get_main_keyboard(),
-    # )
-    # return CHOOSING
-
 
 def skip_notify_user(update: Update, context: CallbackContext) -> int:
     reply_text = "Ладно, похоже что забытых вещей нет"
@@ -58,8 +42,8 @@ def process_received_photo(update: Update, context: CallbackContext) -> int:
         machine_name, machine_number = None, None
     if None not in [machine_name, machine_number]:
         reply_text = f"То что надо! {machine_name} №{machine_number}. \n\n" \
-                     f"Если человечек, кто не забрал вещи пользовался мною, " \
-                     f"то оповещение ему отправлено"
+                     f"Если человечек, кто не забрал вещи использовал меня, " \
+                     f"то оповещение ему будет отправлено"
         update.message.reply_text(
             reply_text,
             reply_markup=get_main_keyboard(),

@@ -1,9 +1,14 @@
 # This util is used to read QR code from the image
+from typing import Union
 
 import requests
+
+from time import sleep
 from PIL import Image
 from PIL.JpegImagePlugin import JpegImageFile
 from pyzbar.pyzbar import decode
+
+from WashItBot.settings import LOGGER
 
 
 def get_qr_code_content(image: JpegImageFile) -> str:
@@ -33,7 +38,7 @@ def get_machine_number(image_url: str) -> (str, int):
         Сушилка, 1
     """
     result = None, None
-    img = Image.open(requests.get(image_url, stream=True).raw)
+    img = __download_image(image_url)
     image_content = get_qr_code_content(img)
     splitted_image_content = image_content.strip().split(r'#')
     if len(splitted_image_content) != 2:
@@ -56,4 +61,15 @@ def __sort_barcodes_by_coordinates(decoded_barcodes: list) -> list:
     return decoded_barcodes_sorted_by_y
 
 
+def __download_image(image_url: str) -> Union[JpegImageFile, Image.Image]:
+    for i in range(3):
+        try:
+            img = Image.open(requests.get(image_url, stream=True).raw)
+            return img
+        except requests.exceptions.RequestException:
+            LOGGER.error(f"Error occurred while trying to download the image. Try {i+1} "
+                         f"URL: '{image_url}'")
+            sleep(3)
+    img = Image.new("RGB", (100, 100), 'black')
+    return img
 

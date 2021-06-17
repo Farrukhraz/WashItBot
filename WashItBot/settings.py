@@ -6,18 +6,16 @@ import sentry_sdk
 from dotenv import load_dotenv
 from telegram import Bot
 
+from WashItBot.utils.logging_util import Logger
+
+
+LOGGER = Logger()
+
 
 # SHORTCUTS
 # Main menu shortcuts
 CHOOSING, PHOTO_TAKE_MACHINE, \
     TIME_TAKE_MACHINE, PHOTO_NOTIFY_USER, *_ = map(chr, range(3, 10))
-
-
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-)
-
-LOGGER = logging.getLogger("WashItBot")
 
 
 BASE_DIR = os.getcwd()

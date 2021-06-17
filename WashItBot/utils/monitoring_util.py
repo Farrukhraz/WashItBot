@@ -1,4 +1,3 @@
-import logging
 import threading
 
 from time import time, sleep
@@ -7,12 +6,7 @@ from typing import Dict
 from telegram import Update
 from telegram.ext import CallbackContext
 
-
-logging.basicConfig(
-    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO
-)
-
-logger = logging.getLogger(__name__)
+from WashItBot.settings import LOGGER
 
 
 class WashingProcess(threading.Thread):
@@ -23,19 +17,20 @@ class WashingProcess(threading.Thread):
         self.user_update = user_update
         self.user_context = user_context
         self.machine_id = machine_id
-        self.__stop = False
+        self._stop = False
         self.end_time = round(time() + self.__validate_time(_time))
 
     def is_busy(self) -> bool:
-        return not self.__stop
+        return not self._stop
 
     def create(self) -> None:
         self.start()
 
     def run(self):
-        while not self.__stop and time() < self.end_time:
+        while not self._stop and time() < self.end_time:
             sleep(1)
-        self.__stop = True
+        self._stop = True
+        LOGGER.debug(f"Machine id={self.machine_id} finished it's work")
 
     def get_remaining_time(self) -> int:
         """ Get remaining time of this machine in seconds """
@@ -43,7 +38,7 @@ class WashingProcess(threading.Thread):
         return remaining_time if remaining_time > 0 else 0
 
     def stop(self):
-        self.__stop = True
+        self._stop = True
 
     def __validate_time(self, _time: int) -> int:
         if not isinstance(_time, int):
@@ -94,7 +89,9 @@ class MonitoringUtil:
     def take_machine(self, user_update: Update, user_context: CallbackContext, machine_id: str, _time: int) -> None:
         """ Take machine """
         if not self.is_machine_busy(machine_id):
-            self.busy_machines[machine_id] = WashingProcess(user_update, user_context, machine_id, _time)
+            machine = WashingProcess(user_update, user_context, machine_id, _time)
+            machine.create()
+            self.busy_machines[machine_id] = machine
         else:
-            logger.warning(f"id='{machine_id}' can't be taken 'cause it is busy")
+            LOGGER.warning(f"id='{machine_id}' can't be taken 'cause it is busy")
 

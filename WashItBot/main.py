@@ -22,7 +22,7 @@ from WashItBot.utils.monitoring_util import MonitoringUtil
 WASHING_MACHINES_MONITORING_UTIL = MonitoringUtil()
 
 
-from WashItBot.message_handlers.hadlers import (
+from WashItBot.message_handlers import (
     command_help_handler,
     command_notify_handler,
     command_start_handler,

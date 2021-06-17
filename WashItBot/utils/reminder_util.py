@@ -2,6 +2,7 @@ from telegram import Update
 
 from threading import Timer
 
+from WashItBot.settings import LOGGER
 from WashItBot.keyboards.main_keyboards import get_main_keyboard
 
 

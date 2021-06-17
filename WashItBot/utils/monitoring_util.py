@@ -19,6 +19,7 @@ class WashingProcess(threading.Thread):
         self.machine_id = machine_id
         self._stop = False
         self.end_time = round(time() + self.__validate_time(_time))
+        self.last_notification_time = 0
 
     def is_busy(self) -> bool:
         return not self._stop
@@ -52,6 +53,12 @@ class MonitoringUtil:
 
     def __init__(self):
         self.busy_machines: Dict[str, WashingProcess] = dict()
+
+    def get_machine(self, machine_id: str) -> WashingProcess:
+        if not isinstance(machine_id, str):
+            LOGGER.error(f"Incorrect type of 'machine_id'. Expected: str; Actual: {type(machine_id)}")
+            raise ValueError(f"Incorrect type of 'machine_id'")
+        return self.busy_machines.get(machine_id)
 
     def get_status(self) -> list:
         """ Returns free and busy washing machines with all necessary info

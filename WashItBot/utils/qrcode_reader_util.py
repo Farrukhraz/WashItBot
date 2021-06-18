@@ -44,7 +44,7 @@ def get_machine_number(image_url: str) -> (str, int):
     if len(splitted_image_content) != 2:
         return result
     machine = splitted_image_content[1]
-    if "stiralka" not in machine and "sushilka" not in machine:
+    if "stiralka" not in machine and "sushka" not in machine:
         return result
     name, number = splitted_image_content[1].split('_')
     if name == "stiralka":

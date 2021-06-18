@@ -126,8 +126,8 @@ def __take_machine(update: Update, context: CallbackContext, _time) -> (str, boo
         WASHING_MACHINES_MONITORING_UTIL.take_machine(user_update=update, user_context=context,
                                                       machine_id=machine_id, _time=_time)
         reply_text = f"Супер, время вижу.\nНу что? Машинка твоя на ближайшие {_time//60} мин."
-        if _time > 5 * 60:
-            reply_text = f"{reply_text}\n\nЯ отправлю тебе оповещение за 5 минут до конца твоей стирки =)"
+        if _time >= 5 * 60:
+            reply_text = f"{reply_text}\n\nЯ отправлю тебе оповещение примерно за 5 минут до конца твоей стирки =)"
     return reply_text, machine_taken
 
 

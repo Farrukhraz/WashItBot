@@ -15,7 +15,7 @@ LOGGER = Logger()
 # SHORTCUTS
 # Main menu shortcuts
 CHOOSING, PHOTO_TAKE_MACHINE, \
-    TIME_TAKE_MACHINE, PHOTO_NOTIFY_USER, *_ = map(chr, range(3, 10))
+    TIME_TAKE_MACHINE, PHOTO_NOTIFY_USER, *_ = map(chr, range(3, 9))
 
 
 BASE_DIR = os.getcwd()

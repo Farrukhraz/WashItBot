@@ -4,6 +4,7 @@ from telegram.ext import CallbackContext
 from WashItBot.main import WASHING_MACHINES_MONITORING_UTIL
 from WashItBot.settings import CHOOSING, LOGGER
 from WashItBot.keyboards.main_keyboards import get_main_keyboard
+from WashItBot.utils.status_util import get_all_machines_status
 
 
 def main(update: Update, context: CallbackContext) -> int:
@@ -17,5 +18,4 @@ def main(update: Update, context: CallbackContext) -> int:
 
 
 def get_current_status() -> str:
-    status: list = WASHING_MACHINES_MONITORING_UTIL.get_status()
-    return str(status)
+    return get_all_machines_status()
